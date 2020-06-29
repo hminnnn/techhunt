@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SearchParams } from "../Dashboard";
+import { SearchParams } from "../EmployeeDashboard";
 
 export class UserService {
   instance = axios.create({
@@ -31,6 +31,15 @@ export class UserService {
 
   async getAllUsers() {
     const res = await this.instance.get("/users/all").then((res) => {
+      return res.data;
+    });
+    return res;
+  }
+
+  async uploadUsers(uploadFile: any) {
+    const data = new FormData();
+    data.append("file", uploadFile);
+    const res = await this.instance.post("/users/upload", data).then((res) => {
       return res.data;
     });
     return res;

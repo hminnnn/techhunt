@@ -1,28 +1,5 @@
 
-var User = require("../models/userSchema");
-
-exports.createUser = (req, res) => {
-  const file = req.file;
-  console.log(req)
-  console.log(file)
-  var user = {
-    id: req.body.id,
-    login: req.body.login,
-    name: req.body.name,
-    salary: req.body.salary,
-  };
-  // User.create(user, (err, user) => {
-  //   if (err) {
-  //     res.json({
-  //       error: err,
-  //     });
-  //   }
-  //   res.json({
-  //     message: "Hero created successfully",
-  //   });
-  // });
-};
-
+const User = require("../models/userSchema");
 
 exports.getAllUsers = function (req, res, next) {
   const limit = 30;
@@ -34,7 +11,7 @@ exports.getAllUsers = function (req, res, next) {
 
 exports.getUsers = function (req, res, next) {
   const params = req.query;
-  console.log("getUsers!" ,params);
+  console.log("getUsers!", params);
 
   // validate params
   const err = { error: "Request params are missing or of invalid format." }

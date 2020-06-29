@@ -2,7 +2,7 @@ import "@fortawesome/fontawesome-free/js/all";
 import React, { useEffect } from "react";
 import { Container, Row } from "react-bootstrap";
 import "./App.css";
-import { Dashboard } from "./Dashboard";
+import { Dashboard } from "./EmployeeDashboard";
 import { MenuPanel } from "./MenuPanel";
 
 function App() {
