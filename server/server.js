@@ -17,12 +17,7 @@ db.on('error', err => {
 app.use(cors())
 app.use(bodyParser.json());
 
-
 app.use('/users', usersRouter);
-
-// app.post('/', function (req, res) {
-//     res.send('Got a POST request')
-// })
 
 app.listen(5000, function () {
     console.log('listening on 5000');

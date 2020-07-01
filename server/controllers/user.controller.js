@@ -1,10 +1,17 @@
 
-const User = require("../models/userSchema");
+const UserDAO = require("../dao/users.dao");
+
+
+exports.getMaxPageNum = function (req, res, next) {
+  const limit = 30;
+  UserDAO.getAllUsers().then(result => {
+    const maxPage = Math.ceil(result.length / limit);
+    return res.json({ maxPageNum: maxPage }).status(200)
+  })
+}
 
 exports.getAllUsers = function (req, res, next) {
-  const limit = 30;
-  User.find({}, { _id: 0 }).limit(limit).then(result => {
-    console.log("all:", { employees: result })
+  UserDAO.getAllUsers().then(result => {
     return res.json({ employees: result }).status(200)
   })
 }
@@ -36,7 +43,7 @@ exports.getUsers = function (req, res, next) {
     skipField = limit + offset;
   }
 
-  User.find(search).sort(sort).limit(limit).skip(skipField).then(result => {
+  UserDAO.getUsersBySearch(search,sort,limit,skipField).then(result => {
     console.log(result)
     return res.json({ employees: result }).status(200)
   }).catch(e => {
