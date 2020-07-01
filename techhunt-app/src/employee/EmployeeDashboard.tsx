@@ -7,7 +7,8 @@ import Pagination from "react-bootstrap/Pagination";
 import Row from "react-bootstrap/Row";
 import Table from "react-bootstrap/Table";
 import { EmployeeUpload } from "./EmployeeUpload";
-import { UserService } from "./service/userService";
+import { UserService } from "../service/userService";
+import Spinner from "react-bootstrap/Spinner";
 
 export class Employees {
   public id: string = "";
@@ -38,11 +39,12 @@ export function Dashboard() {
   const [minSalary, setMinSalary] = useState<number>(0);
   const [maxSalary, setMaxSalary] = useState<number>(100000);
   const [maxPage, setMaxPage] = useState<Number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    userService.getAllUsers().then((res) => {
-      console.log(res);
-    });
+    // userService.getAllUsers().then((res) => {
+    //   console.log(res);
+    // });
     userService
       .getMaxPageNum()
       .then((res) => {
@@ -54,6 +56,7 @@ export function Dashboard() {
   }, []);
 
   useEffect(() => {
+    setIsLoading(true);
     search();
   }, [searchParams]);
 
@@ -62,6 +65,7 @@ export function Dashboard() {
       .getUsers(searchParams)
       .then((res) => {
         setEmployees(res.employees);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.log(err);
@@ -163,54 +167,18 @@ export function Dashboard() {
     );
   };
 
-  // const fileUpload = (e: any) => {
-  //   console.log(e.target.files);
-
-  //   setUploadFile(e.target.files[0]);
-  // };
-
-  // const uploadCSV = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-  //   e.preventDefault();
-  //   if (uploadFile === undefined || uploadFile === null) {
-  //     window.alert("Please select a file to upload");
-  //     return;
-  //   }
-  //   userService
-  //     .uploadUsers(uploadFile)
-  //     .then((res) => {
-  //       console.log("uploaded!", res);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
+  const uploadCallback = (success: boolean) => {
+    if (success) {
+      search();
+    }
+  };
 
   const searchFilters = () => {
     return (
       <Row className="py-4 justify-content-end">
         <Col xs={12} lg={6} className="align-self-center d-flex py-2">
-          {/* <form>
-            <div className="custom-file">
-              <input
-                type="file"
-                className="custom-file-input"
-                id="customFile"
-                onChange={fileUpload}
-                accept=".csv"
-              />
-              <label className="custom-file-label">
-                {uploadFile === undefined || uploadFile === null
-                  ? "Upload Employee CSV"
-                  : uploadFile?.name}
-              </label>
-            </div>
-          </form>
-          <Button onClick={uploadCSV} className="mx-1">
-            Upload <i className="fas fa-upload"></i>
-          </Button> */}
-          <EmployeeUpload />
+          <EmployeeUpload uploadCallback={uploadCallback} />
         </Col>
-
         <Col xs={12} lg={2}>
           <div>
             {" "}
@@ -245,7 +213,6 @@ export function Dashboard() {
 
         <Col xs={12} lg={2} className="align-self-center  d-flex ">
           <Button onClick={submitSearch}>Search</Button>
-
           <Button onClick={resetSearch} className="mx-1">
             Reset
           </Button>
@@ -254,12 +221,24 @@ export function Dashboard() {
     );
   };
 
+  let display;
+  if (isLoading) {
+    display = (
+      <div className="text-center">
+        <Spinner animation="border" role="status">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+      </div>
+    );
+  } else {
+    display = displayTable();
+  }
   return (
-    <Col xs={10}>
+    <Col xs={12}>
       <div className="py-4">
         <h1>Employees</h1>
         {searchFilters()}
-        {displayTable()}
+        {display}
         {displayPagination()}
       </div>
     </Col>
