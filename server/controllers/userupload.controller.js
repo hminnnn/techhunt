@@ -5,11 +5,11 @@ const csv = require('fast-csv');
 // set upload destination and filename
 const uploadFolder = './uploads/'
 const multer = require('multer');
+const fileName = "upload.csv";
 
 const storage = multer.diskStorage({
     destination: uploadFolder,
     filename: function (req, res, cb) {
-        const fileName = "upload-" + new Date().getTime() + ".csv";
         cb(null, fileName)
     }
 })
@@ -18,10 +18,8 @@ const upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
         if (file.mimetype !== 'text/csv' && file.mimetype !== 'application/vnd.ms-excel') {
-            console.log("notcsv!", file.mimetype)
-            deleteFile(req.file)
+            console.log("onlyCSV!")
             cb(null, false)
-
             cb(new Error("Only CSV files are allowed."))
         }
         cb(null, true)
@@ -31,41 +29,47 @@ const upload = multer({
 
 exports.uploadUser = (req, res, next) => {
 
-    upload(req, res, async function (err) {
-        // everything went fine
-        const file = req.file;
-        console.log("file1:", file)
+    upload(req, res, function (err) {
+
+        let failUpload = false;
         if (err instanceof multer.MulterError) {
             // multer error
             console.log("multer err:", err)
-            return res.status(400).json({ error: "Only CSV files are allowed." })
-
+            failUpload = true;
         } else if (err) {
             // unknown err
             console.log("unknown err:", err)
+            failUpload = true;
+        }
+        if (failUpload) {
+            console.log("fail upload");
+            deleteFile()
             return res.status(400).json({ error: "Only CSV files are allowed." })
         }
-
         // everything went fine
+        const file = req.file;
+        console.log("file::", file)
         validateEmployeeCSV(file).then(employeesToCreate => {
             insertNewUsersToDB(employeesToCreate).then(insertRes => {
                 // Delete the uploaded file
+                deleteFile();
                 console.log("insert success:", insertRes)
                 return res.status(200).json({ success: "Sucessfully uploaded!" })
             }).catch(insertErr => {
+                deleteFile();
                 console.log("insert failed:", insertErr)
                 return res.status(400).json({ error: "Error occured" })
             })
         }).catch((e) => {
+            deleteFile();
             console.log("failed reason:", e)
             return res.status(400).json({ error: "Invalid CSV" })
         })
     })
 };
 
-async function deleteFile(file) {
-    console.log("deleting file:", file)
-    fs.unlinkSync(file.path)
+async function deleteFile() {
+    fs.unlinkSync(uploadFolder + fileName)
 }
 
 async function validateEmployeeCSV(file) {

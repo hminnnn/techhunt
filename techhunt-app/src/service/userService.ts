@@ -29,6 +29,13 @@ export class UserService {
     return res;
   }
 
+  async getMaxPageNum() {
+    const res = await this.instance.get("/users/maxPage").then((res) => {
+      return res.data;
+    });
+    return res;
+  }
+
   async getAllUsers() {
     const res = await this.instance.get("/users/all").then((res) => {
       return res.data;

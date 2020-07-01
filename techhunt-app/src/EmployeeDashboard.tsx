@@ -18,7 +18,7 @@ export class Employees {
 
 export class SearchParams {
   public minSalary: number = 0;
-  public maxSalary: number = 4000;
+  public maxSalary: number = 100000;
   public pageNumber: number = 1;
   public sortField: string = "id";
   public limit: number = 30;
@@ -36,15 +36,17 @@ export function Dashboard() {
   );
   const [sortAsc, setSortAsc] = useState<boolean>(true);
   const [minSalary, setMinSalary] = useState<number>(0);
-  const [maxSalary, setMaxSalary] = useState<number>(4000);
-
-  const [uploadFile, setUploadFile] = useState<File>();
+  const [maxSalary, setMaxSalary] = useState<number>(100000);
+  const [maxPage, setMaxPage] = useState<Number>(1);
 
   useEffect(() => {
+    userService.getAllUsers().then((res) => {
+      console.log(res);
+    });
     userService
-      .getAllUsers()
+      .getMaxPageNum()
       .then((res) => {
-        setEmployees(res.employees);
+        setMaxPage(res);
       })
       .catch((err) => {
         console.log(err);
@@ -97,12 +99,8 @@ export function Dashboard() {
 
   const displayPagination = () => {
     let items = [];
-    const noOfPages =
-      Math.floor(employees.length / 30) < 1
-        ? 1
-        : Math.floor(employees.length / 30);
-
-    for (let number = 1; number <= 3; number++) {
+    console.log(maxPage);
+    for (let number = 1; number <= maxPage; number++) {
       items.push(
         <Pagination.Item key={number} active={number == activePage}>
           {number}

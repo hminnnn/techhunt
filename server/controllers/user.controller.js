@@ -1,18 +1,21 @@
 
 const UserDAO = require("../dao/users.dao");
 
-
 exports.getMaxPageNum = function (req, res, next) {
   const limit = 30;
   UserDAO.getAllUsers().then(result => {
     const maxPage = Math.ceil(result.length / limit);
-    return res.json({ maxPageNum: maxPage }).status(200)
+    return res.json(maxPage).status(200)
+  }).catch(err => {
+    return res.json({ error: "Unable to max page number" }).status(400)
   })
 }
 
 exports.getAllUsers = function (req, res, next) {
   UserDAO.getAllUsers().then(result => {
     return res.json({ employees: result }).status(200)
+  }).catch(err => {
+    return res.json({ error: "Unable to get all users" }).status(400)
   })
 }
 
@@ -32,22 +35,17 @@ exports.getUsers = function (req, res, next) {
   const offset = Number(params.offset.trim());
   const limit = 30;
   const sort = params.sort.trim();
-
   const search = {
     salary: { $gte: minSalary },
     salary: { $lte: maxSalary },
   }
 
-  let skipField = 0;
-  if (offset > 0) {
-    skipField = limit + offset;
-  }
-
-  UserDAO.getUsersBySearch(search,sort,limit,skipField).then(result => {
-    console.log(result)
+  console.log("search params::", search, sort, "limit:", limit, "offset:", offset)
+  UserDAO.getUsersBySearch(search, sort, limit, offset).then(result => {
     return res.json({ employees: result }).status(200)
   }).catch(e => {
     console.log("error:", e)
+    return res.json({ error: "Unable to get users" }).status(400)
   })
 
 };
