@@ -96,6 +96,9 @@ export function Dashboard() {
   };
 
   const pageChange = (e: any) => {
+    if (e.target.text === activePage) {
+      return;
+    }
     setActivePage(e.target.text);
     setSearchParams({ ...searchParams, pageNumber: e.target.text });
     search();

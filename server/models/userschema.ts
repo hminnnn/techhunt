@@ -1,6 +1,6 @@
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
-var usersSchema = new Schema(
+import mongoose from 'mongoose'
+const Schema = mongoose.Schema;
+const usersSchema = new Schema(
   {
     id: {
       type: String,
@@ -30,12 +30,14 @@ var usersSchema = new Schema(
 
 );
 
-usersSchema.method.toJson = function() {
-  var obj = this.toObject();
-  delete obj._id;
-  return obj;
-}
+usersSchema.method({
+  toJson: function() {
+    const obj = this.toObject();
+    delete obj._id;
+    return obj;
+  }
+})
 
 // module.exports = usersSchema;
-var User = mongoose.model("User", usersSchema); // register schema with model
-module.exports = User;
+export const User = mongoose.model("User", usersSchema); // register schema with model
+
