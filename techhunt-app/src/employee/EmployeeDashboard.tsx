@@ -9,6 +9,7 @@ import Table from "react-bootstrap/Table";
 import { EmployeeUpload } from "./EmployeeUpload";
 import { UserService } from "../service/userService";
 import Spinner from "react-bootstrap/Spinner";
+import { GrowlProvider } from "../common/Growl";
 
 export class Employees {
   public id: string = "";
@@ -28,18 +29,17 @@ export class SearchParams {
 export function Dashboard() {
   const userService = new UserService();
 
-  const [employees, setEmployees] = useState<Array<Employees>>(
-    new Array<Employees>()
-  );
+  const [employees, setEmployees] = useState<Array<Employees>>(new Array<Employees>());
   const [activePage, setActivePage] = useState<Number>(1);
-  const [searchParams, setSearchParams] = useState<SearchParams>(
-    new SearchParams()
-  );
+  const [searchParams, setSearchParams] = useState<SearchParams>(new SearchParams());
   const [sortAsc, setSortAsc] = useState<boolean>(true);
   const [minSalary, setMinSalary] = useState<number>(0);
   const [maxSalary, setMaxSalary] = useState<number>(100000);
   const [maxPage, setMaxPage] = useState<Number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const [growlType, setGrowlType] = useState<string>("");
+  const [growlMsg, setGrowlMsg] = useState<string>("");
 
   useEffect(() => {
     // userService.getAllUsers().then((res) => {
@@ -68,6 +68,9 @@ export function Dashboard() {
         setIsLoading(false);
       })
       .catch((err) => {
+        setGrowlType("error");
+        setGrowlMsg(err);
+        setIsLoading(false);
         console.log(err);
       });
   };
@@ -176,6 +179,14 @@ export function Dashboard() {
     }
   };
 
+  
+  const clearGrowl = (done: boolean) => {
+    if (done) {
+      setGrowlMsg("");
+      setGrowlType("");
+    }
+  };
+
   const searchFilters = () => {
     return (
       <Row className="py-4 justify-content-end">
@@ -238,6 +249,11 @@ export function Dashboard() {
   }
   return (
     <Col xs={12}>
+      <GrowlProvider
+        message={growlMsg}
+        type={growlType}
+        growlCallback={clearGrowl}
+      />
       <div className="py-4">
         <h1>Employees</h1>
         {searchFilters()}

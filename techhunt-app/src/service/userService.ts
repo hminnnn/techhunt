@@ -25,6 +25,9 @@ export class UserService {
 
       .then((res) => {
         return res.data;
+      })
+      .catch((err) => {
+        throw err.response.data.error;
       });
     return res;
   }
@@ -37,9 +40,14 @@ export class UserService {
   }
 
   async getAllUsers() {
-    const res = await this.instance.get("/users/all").then((res) => {
-      return res.data;
-    });
+    const res = await this.instance
+      .get("/users/all")
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => {
+        throw err.response.data.error;
+      });
     return res;
   }
 
@@ -52,7 +60,7 @@ export class UserService {
         return res.data;
       })
       .catch((err) => {
-        throw err.response.data.error
+        throw err.response.data.error;
       });
     return res;
   }

@@ -38,6 +38,7 @@ usersSchema.method({
   }
 })
 
+
 // module.exports = usersSchema;
 export const User = mongoose.model("User", usersSchema); // register schema with model
 

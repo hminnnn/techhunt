@@ -1,12 +1,20 @@
-
-
-import express from 'express';
-import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import { userRouter } from './routes/users';
+import express from "express";
+import bodyParser from "body-parser";
+import mongoose from "mongoose";
+import cors from "cors";
+import { userRouter } from "./routes/users";
+import * as dotenv from "dotenv";
 const app = express();
-mongoose.connect("mongodb://localhost:27017/techhunt", {
+
+const envPath = process.env.NODE_ENV;
+dotenv.config({ path: "./.env." + envPath?.toString() });
+
+console.log(envPath)
+console.log(process.env.DB_HOST);
+const mongoConnectionStr = process.env.DB_HOST || "";
+mongoose.connect("mongodb://192.168.99.100:27017/techhunt", {
+
+// mongoose.connect(mongoConnectionStr, {
   useNewUrlParser: true,
 });
 const db = mongoose.connection;

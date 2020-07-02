@@ -5,6 +5,7 @@ import {
   getAllUsers,
   getMaxPageNum,
 } from "../controllers/user.controller";
+
 export const userRouter = express.Router();
 
 userRouter.get("/", getUsers);

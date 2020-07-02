@@ -1,18 +1,27 @@
 import * as UserDAO from "../dao/users.dao";
+import { Response, Request, NextFunction } from "express";
 
-export const getMaxPageNum = function (req, res, next) {
+interface UserParams {
+  minSalary: number;
+  maxSalary: number;
+  offset: number;
+  limit: number;
+  sort: string;
+}
+
+export const getMaxPageNum = function (req: Request, res: Response, next: NextFunction) {
   const limit = 30;
   UserDAO.getAllUsers()
     .then((result) => {
-      const maxPage = Math.ceil(result.length / limit);
-      return res.json(maxPage).status(200);
+      const maxPage: number = Math.ceil(result.length / limit);
+      return res.status(200).json(maxPage);
     })
     .catch((err) => {
       return res.json({ error: "Unable to max page number" }).status(400);
     });
 };
 
-export const getAllUsers = function (req, res, next) {
+export const getAllUsers = function (req: Request, res: Response, next: NextFunction) {
   UserDAO.getAllUsers()
     .then((result) => {
       return res.json({ employees: result }).status(200);
@@ -22,36 +31,25 @@ export const getAllUsers = function (req, res, next) {
     });
 };
 
-export const getUsers = function (req, res, next) {
-  const params = req.query;
-  console.log("getUsers!", params);
 
+export const getUsers = function (req: Request, res: Response, next: NextFunction) {
   // validate params
   const err = { error: "Request params are missing or of invalid format." };
-  if (!validateGetUserParams(req.query)) {
+  const params = validateGetUserParams(req.query);
+  if (params === null) {
     return res.status(400).json(err);
   }
 
   // find
-  const minSalary = Number(params.minSalary.trim());
-  const maxSalary = Number(params.maxSalary.trim());
-  const offset = Number(params.offset.trim());
   const limit = 30;
   const sort = params.sort.trim();
   const search = {
-    salary: { $gte: minSalary, $lte: maxSalary },
+    salary: { $gte: params.minSalary, $lte: params.maxSalary },
   };
 
-  console.log(
-    "search params::",
-    search,
-    sort,
-    "limit:",
-    limit,
-    "offset:",
-    offset
-  );
-  UserDAO.getUsersBySearch(search, sort, limit, offset)
+  // console.log("search params::", search, sort, "limit:", limit, "offset:", params.offset);
+  
+  UserDAO.getUsersBySearch(search, sort, limit, params.offset)
     .then((result) => {
       return res.json({ employees: result }).status(200);
     })
@@ -61,38 +59,38 @@ export const getUsers = function (req, res, next) {
     });
 };
 
-function validateGetUserParams(params) {
-  if (
-    !params.minSalary ||
-    !params.maxSalary ||
-    !params.offset ||
-    !params.limit ||
-    !params.sort
-  ) {
-    return false;
+function validateGetUserParams(queryParams:any) {
+  if (!queryParams.minSalary || !queryParams.maxSalary || !queryParams.offset || !queryParams.limit || !queryParams.sort) {
+    return null;
   }
 
   const sortFields = ["id", "name", "login", "salary"];
 
   try {
-    const minSalary = Number(params.minSalary.trim());
-    const maxSalary = Number(params.maxSalary.trim());
-    const offset = Number(params.offset.trim());
-    const limit = Number(params.limit.trim());
-    let sort = params.sort.trim();
-
-    console.log(minSalary, maxSalary, offset, limit, sort);
+    const minSalary = parseFloat(queryParams.minSalary.trim());
+    const maxSalary = parseFloat(queryParams.maxSalary.trim());
+    const offset = parseInt(queryParams.offset.trim());
+    const limit = parseInt(queryParams.limit.trim());
+    let sortCheck = queryParams.sort.trim();
 
     if (isNaN(minSalary) || isNaN(maxSalary) || isNaN(offset) || isNaN(limit)) {
-      return false;
+      return null;
     }
 
-    sort = sort.replace("-", "");
-    if (!sortFields.includes(sort)) {
-      return false;
+    sortCheck = sortCheck.replace("-", "");
+    if (!sortFields.includes(sortCheck)) {
+      return null;
     }
-    return true;
+
+    const userParams: UserParams = {
+      minSalary: minSalary,
+      maxSalary: maxSalary,
+      offset: offset,
+      limit: limit,
+      sort: queryParams.sort,
+    };
+    return userParams;
   } catch (e) {
-    return false;
+    return null;
   }
 }

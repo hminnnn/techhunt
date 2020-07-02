@@ -1,0 +1,16 @@
+version: '3'
+services:
+  backend:
+    build: ./server
+    image: "local/techhunt-server:latest"
+    ports: 
+    - "5000:5000"
+  db:
+    image: "mongo"
+    ports:
+    - "27017:27017"
+  frontend:
+    build: ./techhunt-app
+    image: "local/techhunt-app:latest"
+    ports: 
+    - "3000:3000"
