@@ -3,5 +3,4 @@
 
 /build
 
-.env.docker
 .env.dev
