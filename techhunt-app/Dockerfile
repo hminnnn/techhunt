@@ -5,6 +5,10 @@ COPY yarn.lock ./
 RUN yarn install
 COPY . .
 RUN yarn build
-# only copy build
+
+# remove unused folders
+RUN rm -rf node_modules
+RUN rm -rf src
+
 EXPOSE 3000
 CMD ["npx", "serve", "-s" ,"build", "-l" ,"3000"]
