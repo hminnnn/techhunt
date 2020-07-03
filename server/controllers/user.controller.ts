@@ -67,7 +67,7 @@ function getMaxPageNumFromResults(results: any[]) {
   return Math.ceil(results.length / limit);
 }
 
-function validateGetUserParams(queryParams: any) {
+export function validateGetUserParams(queryParams: any) {
   if (
     !queryParams.minSalary ||
     !queryParams.maxSalary ||

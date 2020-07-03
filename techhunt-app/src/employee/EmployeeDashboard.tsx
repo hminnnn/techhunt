@@ -177,7 +177,7 @@ export function Dashboard() {
               </span>
             </th>
             <th onClick={sortColumn} id={"salary"}>
-              {labels.table.header.salary}
+             S$ {labels.table.header.salary}
               <span className="align-self-center" id={"salary"}>
                 <span className="fas fa-sort sortIcon" id={"salary"}></span>
               </span>

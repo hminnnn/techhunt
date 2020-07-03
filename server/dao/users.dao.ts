@@ -1,12 +1,15 @@
 import { User } from "../schema/userschema";
 import { Employee } from "../models/usermodels";
 
+
+const excludeFieldsFromSearch = "-_id -__v -createdAt -updatedAt";
+
 export const getAllUsers = () => {
-  return User.find({}, { _id: 0 });
+  return User.find({}).select(excludeFieldsFromSearch);
 };
 
 export const getUsersBySearch = (search: any, sort: string, limit: number, skipField: number) => {
-  return User.find(search).sort(sort).limit(limit).skip(skipField);
+  return User.find(search).select(excludeFieldsFromSearch).sort(sort).limit(limit).skip(skipField);
 };
 
 export const insertEmployee = async (employee: Employee) => {

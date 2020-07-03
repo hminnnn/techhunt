@@ -135,7 +135,7 @@ const insertNewUsersToDB = async (employeeList: any[]) => {
   return true;
 };
 
-const validateEmployeeFields = (employeeObj: Employee) => {
+export const validateEmployeeFields = (employeeObj: Employee) => {
   const alphaNumericRegex = new RegExp("^[a-zA-Z0-9]+$");
   if (employeeObj.id === "" || employeeObj.login === "" || employeeObj.name === "") {
     return false;
