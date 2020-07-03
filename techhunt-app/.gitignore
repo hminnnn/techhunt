@@ -5,8 +5,8 @@
 /.pnp
 .pnp.js
 
-.env.docker
-.end.dev
+.env.production
+.env.development
 
 # testing
 /coverage

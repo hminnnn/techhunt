@@ -32,6 +32,10 @@
   "growl": {
     "success": {
       "upload": "Upload success"
+    },
+    "error": {
+      "loadpage": "Error loading page",
+      "getemployees": "Error getting employees"
     }
   }
 }

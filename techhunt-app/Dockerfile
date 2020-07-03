@@ -7,4 +7,4 @@ COPY . .
 RUN yarn build
 # only copy build
 EXPOSE 3000
-CMD ["npx", "serve", "-s" ,"build", "-l" ,"3000", "&&", "set" ,"NODE_ENV=dev"]
+CMD ["npx", "serve", "-s" ,"build", "-l" ,"3000"]

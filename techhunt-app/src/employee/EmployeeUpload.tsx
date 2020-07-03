@@ -5,7 +5,6 @@ import Row from "react-bootstrap/Row";
 import { GrowlProvider } from "../common/Growl";
 import { UserService } from "../service/userService";
 import * as labels from "../resources/labels.json";
-import { Dialog } from "primereact/dialog";
 
 interface AppProps {
   uploadCallback: Function;

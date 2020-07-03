@@ -1,5 +1,7 @@
 # dependencies
 /node_modules
 
+/build
+
 .env.docker
-.end.dev
+.env.dev

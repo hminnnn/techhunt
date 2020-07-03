@@ -1,10 +1,16 @@
 import axios from "axios";
 import { SearchParams } from "../employee/EmployeeDashboard";
 
+const envPath = process.env.NODE_ENV;
+let baseUrl = process.env.REACT_APP_BACKEND_CONN;
+
+console.log("envPath:", envPath);
+console.log("baseUrl:", baseUrl);
+
 export class UserService {
   instance = axios.create({
     // .. where we make our configurations
-    baseURL: "http://localhost:5000",
+    baseURL: baseUrl,
   });
 
   async getUsers(searchParams: SearchParams) {
@@ -32,13 +38,6 @@ export class UserService {
     return res;
   }
 
-  async getMaxPageNum() {
-    const res = await this.instance.get("/users/maxPage").then((res) => {
-      return res.data;
-    });
-    return res;
-  }
-
   async getAllUsers() {
     const res = await this.instance
       .get("/users/all")
@@ -46,7 +45,10 @@ export class UserService {
         return res.data;
       })
       .catch((err) => {
-        throw err.response.data.error;
+        if (err.response !== undefined) {
+          throw err.response.data.error;
+        }
+          throw new Error("Error")
       });
     return res;
   }

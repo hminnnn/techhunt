@@ -62,7 +62,7 @@ export function Dashboard() {
       })
       .catch((err) => {
         setGrowlType("error");
-        setGrowlMsg("Error loading page");
+        setGrowlMsg(labels.growl.error.loadpage);
       });
   };
   const search = () => {
@@ -70,7 +70,8 @@ export function Dashboard() {
       .getUsers(searchParams)
       .then((res) => {
         setEmployees(res.results);
-        setActivePage(1);
+        // if (searchParams.pageNumber)
+        setActivePage(searchParams.pageNumber);
         if (firstLoad) {
           setFirstLoad(false);
         } else {
@@ -79,7 +80,7 @@ export function Dashboard() {
       })
       .catch((err) => {
         setGrowlType("error");
-        setGrowlMsg(err);
+        setGrowlMsg(labels.growl.error.getemployees);
         console.log(err);
       })
       .finally(() => {
@@ -127,7 +128,7 @@ export function Dashboard() {
     let items = [];
     for (let number = 1; number <= maxPage; number++) {
       items.push(
-        <Pagination.Item key={number} active={number == activePage} onClick={() => pageChange(number)}>
+        <Pagination.Item key={number} active={number === activePage} onClick={() => pageChange(number)}>
           {number}
         </Pagination.Item>
       );
@@ -218,7 +219,7 @@ export function Dashboard() {
               placeholder="$0"
               value={minSalary}
               onChange={(e) => {
-                setMinSalary(parseFloat(e.target.value));
+                !isNaN(parseFloat(e.target.value)) && setMinSalary(parseFloat(e.target.value));
               }}
             />
           </InputGroup>
@@ -233,7 +234,7 @@ export function Dashboard() {
               placeholder="$4000"
               aria-label="Amount (to the nearest dollar)"
               onChange={(e) => {
-                setMaxSalary(parseFloat(e.target.value));
+                !isNaN(parseFloat(e.target.value)) && setMaxSalary(parseFloat(e.target.value));
               }}
             />
           </InputGroup>
