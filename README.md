@@ -6,6 +6,8 @@ Backend: Express - port `5000`
 
 Database: MongoDB - `collection name: employees`
 
+Test: Jest
+
 # Setup
 
 ## 1. Clone Git repo
