@@ -2,14 +2,16 @@ import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import { useTranslation } from "react-i18next";
 import { GrowlProvider } from "../common/Growl";
 import { UserService } from "../service/userService";
-import * as labels from "../resources/labels.json";
 
 interface AppProps {
   uploadCallback: Function;
 }
 export function EmployeeUpload(props: AppProps) {
+  const { t } = useTranslation();
+
   const userService = new UserService();
   const [growlType, setGrowlType] = useState<string>("");
   const [growlMsg, setGrowlMsg] = useState<string>("");
@@ -21,14 +23,14 @@ export function EmployeeUpload(props: AppProps) {
 
   const uploadCSV = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (uploadFile === undefined || uploadFile === null) {
-      window.alert(labels.page.users.alert.selectfile);
+      window.alert(t('page.users.alert.selectfile'));
       return;
     }
     userService
       .uploadUsers(uploadFile)
       .then((res) => {
         setGrowlType("success");
-        setGrowlMsg(labels.growl.success.upload);
+        setGrowlMsg(t('growl.success.upload'));
         props.uploadCallback(true);
       })
       .catch((err) => {
@@ -60,7 +62,7 @@ export function EmployeeUpload(props: AppProps) {
               />
               <label className="custom-file-label">
                 {uploadFile === undefined || uploadFile === null
-                  ? labels.page.users.uploadcsvplaceholder
+                  ? t('page.users.uploadcsvplaceholder')
                   : uploadFile?.name}
               </label>
             </div>
@@ -68,7 +70,7 @@ export function EmployeeUpload(props: AppProps) {
         </div>
         <div style={{ display: "inline-block" }} className="align-self-center">
           <Button onClick={uploadCSV} className="mx-1">
-            {labels.buttons.upload} <i className="fas fa-upload"></i>
+            {t('buttons.upload')} <i className="fas fa-upload"></i>
           </Button>
         </div>
       </Col>

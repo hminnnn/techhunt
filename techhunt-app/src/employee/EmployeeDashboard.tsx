@@ -10,7 +10,7 @@ import { EmployeeUpload } from "./EmployeeUpload";
 import { UserService } from "../service/userService";
 import Spinner from "react-bootstrap/Spinner";
 import { GrowlProvider } from "../common/Growl";
-import * as labels from "../resources/labels.json";
+import { useTranslation } from "react-i18next";
 
 export class Employees {
   public id: string = "";
@@ -28,6 +28,8 @@ export class SearchParams {
 }
 
 export function Dashboard() {
+  const { t } = useTranslation();
+
   const userService = new UserService();
   const maxSalaryDefault = 100000;
   const minSalaryDefault = 0;
@@ -62,7 +64,7 @@ export function Dashboard() {
       })
       .catch((err) => {
         setGrowlType("error");
-        setGrowlMsg(labels.growl.error.loadpage);
+        setGrowlMsg(t('growl.error.loadpage'));
       });
   };
   const search = () => {
@@ -80,7 +82,7 @@ export function Dashboard() {
       })
       .catch((err) => {
         setGrowlType("error");
-        setGrowlMsg(labels.growl.error.getemployees);
+        setGrowlMsg(t('growl.error.getemployees'));
         console.log(err);
       })
       .finally(() => {
@@ -162,22 +164,22 @@ export function Dashboard() {
       <Table bordered hover>
         <thead>
           <tr>
-            <th>{labels.table.header.id} </th>
+            <th>{t('table.header.id')} </th>
             <th onClick={sortColumn} id={"login"}>
-              {labels.table.header.login}
+              {t('table.header.login')}
 
               <span className="align-self-center" id={"login"}>
                 <span className="fas fa-sort sortIcon" id={"login"}></span>
               </span>
             </th>
             <th onClick={sortColumn} id={"name"}>
-              {labels.table.header.name}
+              {t('table.header.name')}
               <span className="align-self-center" id={"name"}>
                 <span className="fas fa-sort sortIcon" id={"name"}></span>
               </span>
             </th>
             <th onClick={sortColumn} id={"salary"}>
-             S$ {labels.table.header.salary}
+              S$ {t('table.header.salary')}
               <span className="align-self-center" id={"salary"}>
                 <span className="fas fa-sort sortIcon" id={"salary"}></span>
               </span>
@@ -211,7 +213,7 @@ export function Dashboard() {
         <Col xs={12} lg={2}>
           <div>
             {" "}
-            <b> {labels.page.users.minsalary}</b>
+            <b> {t('page.users.minsalary')}</b>
           </div>
           <InputGroup className="mb-3">
             <FormControl
@@ -226,7 +228,7 @@ export function Dashboard() {
         </Col>
         <Col xs={12} lg={2}>
           <div>
-            <b>{labels.page.users.maxsalary}</b>
+            <b>{t('page.users.maxsalary')}</b>
           </div>
           <InputGroup className="mb-3">
             <FormControl
@@ -241,9 +243,9 @@ export function Dashboard() {
         </Col>
 
         <Col xs={12} lg={2} className="align-self-center  d-flex ">
-          <Button onClick={submitSearch}>{labels.buttons.search}</Button>
+          <Button onClick={submitSearch}>{t('buttons.search')}</Button>
           <Button onClick={resetSearch} className="mx-1">
-            {labels.buttons.reset}
+            {t('buttons.reset')}
           </Button>
         </Col>
       </Row>
@@ -266,7 +268,7 @@ export function Dashboard() {
     <Col xs={12}>
       <GrowlProvider message={growlMsg} type={growlType} growlCallback={clearGrowl} />
       <div className="py-4">
-        <h1> {labels.title.employee}</h1>
+        <h1> {t('title.employee')}</h1>
         {searchFilters()}
         {display}
         {displayPagination()}

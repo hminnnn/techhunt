@@ -1,0 +1,42 @@
+{
+    "table": {
+      "header": {
+        "id": "xx",
+        "login": "xx",
+        "name": "xx",
+        "salary": "xx"
+      }
+    },
+    "buttons": {
+      "upload": "Upload",
+      "search": "Search",
+      "reset": "Reset",
+      "browse": "Browse"
+    },
+    "title": {
+      "employee": "Employees"
+    },
+    "menu": {
+      "dashboard": "Dashboard"
+    },
+    "page": {
+      "users": {
+        "minsalary": "xx",
+        "maxsalary": "xx",
+        "alert": {
+          "selectfile": "Please select a file to upload"
+        },
+        "uploadcsvplaceholder": "Upload employee csv"
+      }
+    },
+    "growl": {
+      "success": {
+        "upload": "Upload success"
+      },
+      "error": {
+        "loadpage": "Error loading page",
+        "getemployees": "Error getting employees"
+      }
+    }
+  }
+  
