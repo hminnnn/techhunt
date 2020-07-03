@@ -14,6 +14,8 @@ import { AppProfile } from "./AppProfile";
 import { AppTopbar } from "./AppTopBar";
 import { Dashboard } from "./employee/EmployeeDashboard";
 import "./layout/layout.scss";
+import * as labels from "../src/resources/labels.json";
+
 
 interface AppProps {}
 
@@ -96,7 +98,7 @@ class App extends React.Component<AppProps, AppState> {
   createMenu() {
     this.menu = [
       {
-        label: "Dashboard",
+        label: labels.menu.dashboard,
         icon: "pi pi-fw pi-home",
         command: () => {
           window.location.replace("/");

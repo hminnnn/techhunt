@@ -1,66 +1,80 @@
 import * as UserDAO from "../dao/users.dao";
 import { Response, Request, NextFunction } from "express";
+import { UserParams } from "../models/usermodels";
+import * as messages from "../resources/messages.json";
 
-interface UserParams {
-  minSalary: number;
-  maxSalary: number;
-  offset: number;
-  limit: number;
-  sort: string;
-}
+const limit = 30;
 
-export const getMaxPageNum = function (req: Request, res: Response, next: NextFunction) {
-  const limit = 30;
-  UserDAO.getAllUsers()
-    .then((result) => {
-      const maxPage: number = Math.ceil(result.length / limit);
-      return res.status(200).json(maxPage);
-    })
-    .catch((err) => {
-      return res.json({ error: "Unable to max page number" }).status(400);
-    });
+
+export const getAllUsers = async function (req: Request, res: Response, next: NextFunction) {
+
+  // find
+  const sort = "id"
+  const search = {
+  };
+
+  // console.log("search params::", search, sort, "limit:", limit, "offset:", params.offset);
+  try {
+    const maxPageRes = await UserDAO.getUsersBySearch(search, sort, 0, 0);
+    const maxPage = getMaxPageNumFromResults(maxPageRes);
+    const results = await UserDAO.getUsersBySearch(search, sort, 0, 0);
+    return res.json({ results: results, maxPage: maxPage }).status(200);
+  } catch (e) {
+    console.log("error:", e);
+    return res.json({ error: messages.user.get.error.error }).status(400);
+  }
+
 };
 
-export const getAllUsers = function (req: Request, res: Response, next: NextFunction) {
-  UserDAO.getAllUsers()
-    .then((result) => {
-      return res.json({ employees: result }).status(200);
-    })
-    .catch((err) => {
-      return res.json({ error: "Unable to get all users" }).status(400);
-    });
-};
+// export const getAllUsers = function (req: Request, res: Response, next: NextFunction) {
+//   UserDAO.getAllUsers()
+//     .then((result) => {
+//       return res.json({ results: result }).status(200);
+//     })
+//     .catch((err) => {
+//       return res.json({ error: messages.user.get.error.error }).status(400);
+//     });
+// };
 
-
-export const getUsers = function (req: Request, res: Response, next: NextFunction) {
+export const getUsers = async function (req: Request, res: Response, next: NextFunction) {
   // validate params
-  const err = { error: "Request params are missing or of invalid format." };
+  const err = { error: messages.user.get.error.searchparams };
   const params = validateGetUserParams(req.query);
   if (params === null) {
     return res.status(400).json(err);
   }
 
   // find
-  const limit = 30;
   const sort = params.sort.trim();
   const search = {
     salary: { $gte: params.minSalary, $lte: params.maxSalary },
   };
 
   // console.log("search params::", search, sort, "limit:", limit, "offset:", params.offset);
-  
-  UserDAO.getUsersBySearch(search, sort, limit, params.offset)
-    .then((result) => {
-      return res.json({ employees: result }).status(200);
-    })
-    .catch((e) => {
-      console.log("error:", e);
-      return res.json({ error: "Unable to get users" }).status(400);
-    });
+  try {
+    const maxPageRes = await UserDAO.getUsersBySearch(search, sort, 0, 0);
+    const maxPage = getMaxPageNumFromResults(maxPageRes);
+    const results = await UserDAO.getUsersBySearch(search, sort, limit, params.offset);
+    return res.json({ results: results, maxPage: maxPage }).status(200);
+  } catch (e) {
+    console.log("error:", e);
+    return res.json({ error: messages.user.get.error.error }).status(400);
+  }
+
 };
 
-function validateGetUserParams(queryParams:any) {
-  if (!queryParams.minSalary || !queryParams.maxSalary || !queryParams.offset || !queryParams.limit || !queryParams.sort) {
+function getMaxPageNumFromResults(results: any[]) {
+  return Math.ceil(results.length / limit);
+}
+
+function validateGetUserParams(queryParams: any) {
+  if (
+    !queryParams.minSalary ||
+    !queryParams.maxSalary ||
+    !queryParams.offset ||
+    !queryParams.limit ||
+    !queryParams.sort
+  ) {
     return null;
   }
 

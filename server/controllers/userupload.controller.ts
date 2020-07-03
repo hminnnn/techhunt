@@ -1,14 +1,9 @@
 import multer from "multer";
 import { ParserRowMap, parseString } from "fast-csv";
 import * as UserDAO from "../dao/users.dao";
-import e, { Request, Response, NextFunction } from "express";
-
-export interface Employee {
-  id: string;
-  login: string;
-  name: string;
-  salary: number;
-}
+import { Request, Response, NextFunction } from "express";
+import { Employee } from "../models/usermodels";
+import * as messages from "../resources/messages.json";
 
 let someoneUploading = false;
 
@@ -16,9 +11,9 @@ const upload = multer({
   // storage: storage,
   fileFilter: (req, file, cb) => {
     if (file.mimetype !== "text/csv" && file.mimetype !== "application/vnd.ms-excel") {
-      console.log("onlyCSV!");
+      console.log("file is not CSV!");
       cb(null, false);
-      cb(new Error("Only CSV files are allowed."));
+      cb(new Error(messages.user.upload.error.csvonly));
     }
     cb(null, true);
   },
@@ -26,7 +21,7 @@ const upload = multer({
 
 export const uploadUser = (req: Request, res: Response, next: NextFunction) => {
   if (someoneUploading) {
-    return res.status(400).json({ error: "There is an upload ongoing" });
+    return res.status(400).json({ error: messages.user.upload.error.uploadongoing });
   }
 
   someoneUploading = true;
@@ -44,27 +39,28 @@ export const uploadUser = (req: Request, res: Response, next: NextFunction) => {
     }
     if (failUpload) {
       someoneUploading = false;
-      return res.status(400).json({ error: "Only CSV files are allowed." });
+      return res.status(400).json({ error: messages.user.upload.error.csvonly});
     }
 
     // everything went fine
     const file = req.file;
 
     validateEmployeeCSV(file.buffer)
-      .then((employeesToCreate) => {
-        insertNewUsersToDB(employeesToCreate)
-          .then((insertRes) => {
-            someoneUploading = false;
-            return res.status(200).json({ success: "Sucessfully uploaded!" });
-          })
-          .catch((insertErr) => {
-            someoneUploading = false;
-            return res.status(400).json({ error: "Error occured" });
-          });
+      .then(async (employeesToCreate: any[]) => {
+        try {
+          await insertNewUsersToDB(employeesToCreate);
+          someoneUploading = false;
+          return res.status(200).json({ success: messages.user.upload.success });
+        } catch (e) {
+          console.log("error: ", e);
+          someoneUploading = false;
+          return res.status(400).json({ error: messages.user.upload.error.error });
+        }
       })
       .catch((e) => {
+        console.log("error: ", e);
         someoneUploading = false;
-        return res.status(400).json({ error: "Invalid CSV" });
+        return res.status(400).json({ error: messages.user.upload.error.invalidcsv });
       });
   });
 };
@@ -73,7 +69,6 @@ const validateEmployeeCSV = async (fileBuffer: Buffer) => {
   let employeesToCreate: any[] = [];
 
   try {
-
     let invalidCSVErr: any;
     const bufferStr = fileBuffer.toString();
     const options = {
@@ -96,13 +91,13 @@ const validateEmployeeCSV = async (fileBuffer: Buffer) => {
         .on("data-invalid", (invalidRow, rowNum, reason) => {
           // Invalid columns / salary
           console.error("invalidrow:", invalidRow, " rowNum:", rowNum, " reason: " + reason);
-          let errMsg = reason === undefined ? "Invalid columns" : reason;
+          let errMsg = reason === undefined ? messages.user.upload.error.invalidcolumn : reason;
           invalidCSVErr = new Error(errMsg);
         })
         .on("data", (validRow: Employee) => {
           // Invalid fields
           if (!validateEmployeeFields(validRow)) {
-            invalidCSVErr = new Error("Invalid fields");
+            invalidCSVErr = new Error(messages.user.upload.error.invalidfields);
           } else {
             employeesToCreate.push(validRow);
           }
@@ -111,7 +106,7 @@ const validateEmployeeCSV = async (fileBuffer: Buffer) => {
           console.log("Parsed " + rowCount + "rows");
           // Empty file
           if (rowCount === 0) {
-            invalidCSVErr = new Error("File empty");
+            invalidCSVErr = new Error(messages.user.upload.error.emptyfile);
           }
           if (invalidCSVErr) {
             reject(invalidCSVErr);
@@ -134,14 +129,10 @@ const validateEmployeeCSV = async (fileBuffer: Buffer) => {
 };
 
 const insertNewUsersToDB = async (employeeList: any[]) => {
-  try {
-    for (let employee of employeeList) {
-      UserDAO.insertEmployee(employee);
-    }
-    return true;
-  } catch (e) {
-    return e;
+  for (let employee of employeeList) {
+    await UserDAO.insertEmployee(employee);
   }
+  return true;
 };
 
 const validateEmployeeFields = (employeeObj: Employee) => {

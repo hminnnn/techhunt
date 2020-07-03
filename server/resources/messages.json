@@ -1,0 +1,26 @@
+
+{
+    "user" :{
+        "get": {
+            "success" : "",
+            "error" : {
+                "error": "Unable to get all users",
+                "maxpage": "Unable to max page number",
+                "searchparams":"Request params are missing or of invalid format."
+            }
+        },
+        "upload": {
+            "success": "Upload success!",
+            "error" : {
+                "error": "Error occurred",
+                "csvonly": "Only CSV files are allowed.",
+                "uploadongoing": "There is an upload ongoing",
+                "invalidcsv": "Invalid CSV",
+                "invalidfields": "Invalid fields",
+                "invalidcolumn": "Invalid column",
+                "emptyfile": "File empty"
+            }
+        }
+       
+    }
+}

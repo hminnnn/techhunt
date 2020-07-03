@@ -1,5 +1,5 @@
-import { User } from "../models/userschema";
-import { Employee } from "../controllers/userupload.controller";
+import { User } from "../schema/userschema";
+import { Employee } from "../models/usermodels";
 
 export const getAllUsers = () => {
   return User.find({}, { _id: 0 });
@@ -9,7 +9,7 @@ export const getUsersBySearch = (search: any, sort: string, limit: number, skipF
   return User.find(search).sort(sort).limit(limit).skip(skipField);
 };
 
-export const insertEmployee = (employee: Employee) => {
+export const insertEmployee = async (employee: Employee) => {
   const options = { upsert: true };
 
   const findId = { id: employee.id };
@@ -21,10 +21,10 @@ export const insertEmployee = (employee: Employee) => {
 
   function cb(err: any, result: any) {
     if (err) {
-      return err;
+      return new Error(err.message);
     }
     return result;
   }
 
-  return User.findOneAndUpdate(findId, updateObj, options, cb);
+  return await User.findOneAndUpdate(findId, updateObj, options, cb);
 };

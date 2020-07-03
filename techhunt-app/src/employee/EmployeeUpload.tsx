@@ -4,6 +4,8 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { GrowlProvider } from "../common/Growl";
 import { UserService } from "../service/userService";
+import * as labels from "../resources/labels.json";
+import { Dialog } from "primereact/dialog";
 
 interface AppProps {
   uploadCallback: Function;
@@ -15,20 +17,19 @@ export function EmployeeUpload(props: AppProps) {
   const [uploadFile, setUploadFile] = useState<File | null>();
 
   const fileUpload = (e: any) => {
-    console.log(e.target.files[0]);
     setUploadFile(e.target.files[0]);
   };
 
   const uploadCSV = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (uploadFile === undefined || uploadFile === null) {
-      window.alert("Please select a file to upload");
+      window.alert(labels.page.users.alert.selectfile);
       return;
     }
     userService
       .uploadUsers(uploadFile)
       .then((res) => {
         setGrowlType("success");
-        setGrowlMsg("Upload Success");
+        setGrowlMsg(labels.growl.success.upload);
         props.uploadCallback(true);
       })
       .catch((err) => {
@@ -46,11 +47,7 @@ export function EmployeeUpload(props: AppProps) {
 
   return (
     <Row>
-      <GrowlProvider
-        message={growlMsg}
-        type={growlType}
-        growlCallback={clearGrowl}
-      />
+      <GrowlProvider message={growlMsg} type={growlType} growlCallback={clearGrowl} />
       <Col xs={12}>
         <div style={{ display: "inline-block" }}>
           <form>
@@ -64,7 +61,7 @@ export function EmployeeUpload(props: AppProps) {
               />
               <label className="custom-file-label">
                 {uploadFile === undefined || uploadFile === null
-                  ? "Upload Employee CSV"
+                  ? labels.page.users.uploadcsvplaceholder
                   : uploadFile?.name}
               </label>
             </div>
@@ -72,7 +69,7 @@ export function EmployeeUpload(props: AppProps) {
         </div>
         <div style={{ display: "inline-block" }} className="align-self-center">
           <Button onClick={uploadCSV} className="mx-1">
-            Upload <i className="fas fa-upload"></i>
+            {labels.buttons.upload} <i className="fas fa-upload"></i>
           </Button>
         </div>
       </Col>
